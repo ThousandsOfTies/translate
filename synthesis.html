@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>D&D</title>
+    <style type="text/css">
+      nav ul{
+          display: table;
+          margin: 0 auto;
+          padding: 0 ;
+          width: 80%;
+          text-align: center;
+      }
+      nav li{
+          display: table-cell;
+          min-width: 50px;
+          text-decoration: none;
+          color: #555;
+          padding-bottom: 5px;
+      }
+      nav li.current{
+          border-bottom: 3px solid #92D050;
+      }
+      .draggable {
+          position:relative;
+          user-select:none;
+          cursor:pointer;
+          z-index:2;
+      }
+      .dragging {
+          opacity:.5;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <ul>
+        <li id="move" class="mode_selector">動かす</li>
+        <li id="eng"  class="mode_selector">英語</li>
+      </ul>
+    </nav>
+    <select id="voice-select" style="justify-content:center;" />
+    <input id="voice-test" type="button" value="視聴" style="justify-content: center" />
+    <div id="whiteboard">
+    </div>
+    <script>
+      let voiceSelect = document.querySelector('#voice-select');
+      function appendVoices() {
+          // ①　使える声の配列を取得
+          // 配列の中身は SpeechSynthesisVoice オブジェクト
+          const voices = speechSynthesis.getVoices();
+          voiceSelect.innerHTML = '';
+          voices.forEach(voice => { //　アロー関数 (ES6)
+              // 日本語と英語以外の声は選択肢に追加しない。
+              if(!voice.lang.match('ja|en-US')) return;
+              const option = document.createElement('option');
+              option.value = voice.name;
+              option.text  = `${voice.name} (${voice.lang});` //　テンプレートリテラル (ES6)
+              option.setAttribute('selected', voice.default);
+              voiceSelect.appendChild(option);
+          });
+      }
+      appendVoices();
+      speechSynthesis.onvoiceschanged = e => {
+          appendVoices();
+      }
+
+      let voiceTest = document.querySelector('#voice-test');
+      voiceTest.addEventListener('click', function() {
+          // 発言を作成
+          const uttr = new SpeechSynthesisUtterance("Hello, world!");
+          // ③ 選択された声を指定
+          uttr.voice = speechSynthesis
+              .getVoices()
+              .filter(voice => voice.name === voiceSelect.value)[0];
+          // 発言を再生 (発言キュー発言に追加)
+          speechSynthesis.speak(uttr);
+      });
+
+      let wb = document.getElementById("whiteboard");
+      let spans = {
+          "1":{"kind":"span", "class":"draggable", "jp":"ちーちゃんがイチゴを食べる。", "en":"Chihiro eats strawberry."},
+          "2":{"kind":"span", "class":"draggable", "jp":"ちーちゃんがバナナを食べる。", "en":"Chihiro is playing tennis in Miyoshi-cho park."},
+      };
+      Object.keys(spans).forEach( key => {
+          let a = spans[key];
+          let add_code = '<' + a["kind"] + ' id="' + key + '" class="' + a["class"] + '">' + a["text"] + '</' + a["kind"] + '>';
+          wb.insertAdjacentHTML('beforeend', add_code);
+      });
+
+      
+      let clickModeSelector = e => {
+          document.querySelectorAll(".mode_selector").forEach( elm => {
+              elm.classList.remove("current");
+          });
+          e.target.classList.add("current");
+      }
+      document.getElementById("move").addEventListener("click", (e) => {
+          clickModeSelector(e);
+          document.querySelectorAll(".draggable").forEach( elm => {
+              elm.textContent = spans[elm.id]["jp"];
+          });
+      });
+      document.getElementById("eng").addEventListener("click", (e) => {
+          clickModeSelector(e);
+          document.querySelectorAll(".draggable").forEach( elm => {
+              elm.textContent = spans[elm.id]["en"];
+          });
+      });
+      document.querySelectorAll(".draggable").forEach( elm => {
+          elm.addEventListener("mousedown", ev => {
+              if(document.getElementById("eng").classList.contains('current')){
+                  // 発言を作成
+                  const uttr = new SpeechSynthesisUtterance(ev.target.textContent);
+                  // ③ 選択された声を指定
+                  uttr.voice = speechSynthesis
+                      .getVoices()
+                      .filter(voice => voice.name === voiceSelect.value)[0];
+                  // 発言を再生 (発言キュー発言に追加)
+                  speechSynthesis.speak(uttr);
+                  return;
+              }else{
+                  ev.target.classList.add("dragging");
+                  return;
+              }
+          });
+          elm.addEventListener("mouseup", ev => {
+              ev.target.classList.remove("dragging");
+          });
+          let prevX;
+          let prevY;
+          elm.addEventListener("touchstart", ev => {
+              prevX = ev.touches[0].clientX;
+              prevY = ev.touches[0].clientY;
+              ev.target.classList.add("dragging");
+          });
+          elm.addEventListener("mouseout", ev => {
+              ev.target.classList.remove("dragging");
+          });
+          elm.addEventListener("touchend", ev => {
+              ev.target.classList.remove("dragging");
+          });
+          elm.addEventListener("mousemove", ev => {
+              if(ev.target.classList.contains('dragging')==false){
+                  return;
+              }
+              var style = getComputedStyle(ev.target);
+              ev.target.style.top  = (parseInt(style.top, 10) +  ev.movementY ) + "px";
+              ev.target.style.left = (parseInt(style.left, 10) + ev.movementX ) + "px";
+          });
+          elm.addEventListener("touchmove", ev => {
+              let x = ev.touches[0].clientX - prevX;
+              let y = ev.touches[0].clientY - prevY;
+              prevX = ev.touches[0].clientX;
+              prevY = ev.touches[0].clientY;
+              if(ev.target.classList.contains('dragging')==false){
+                  return;
+              }
+              var style = getComputedStyle(ev.target);
+              ev.target.style.top  = (parseInt(style.top, 10) +  y ) + "px";
+              ev.target.style.left = (parseInt(style.left, 10) + x ) + "px";
+          });
+      });
+
+      document.getElementById("move").click();
+
+      </script>
+  </body>
+</html>

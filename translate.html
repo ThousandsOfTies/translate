@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>translate</title>
+  </head>
+  <body>
+    <input id="source" type="text" />
+    <input id="translate-test" type="button" value="翻訳" style="justify-content: center" />
+    <div id='translate-result' class="text-center">
+      ここに結果が表示されます。
+    </div>
+    <script>
+      document.getElementById("translate-test").addEventListener('click', e => {
+          let src = document.querySelector('#source').value;
+          console.log('click ' + src);
+          fetch('https://script.google.com/macros/s/AKfycbzaYhG3i8Q8G-jp0t5DK04qAe7v11od6WVdcNtkvrR6a58b4CbBSgdWmW4QWZ4kFM3l/exec?translate="' + src + '"&source=ja&target=en')
+              .then(response => {
+                  return response.json();
+              })
+              .then(json => {
+                  return document.querySelector('#translate-result').textContent = json;
+              });
+      });
+    </script>
+  </body>
+</html>
