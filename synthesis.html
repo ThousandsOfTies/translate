@@ -95,13 +95,13 @@
                       this.prevY = ev.touches[0].clientY;
                   });
                   elm.addEventListener("touchmove", ev => {
-                      if(ev.target.classList.contains('holding')==false){
-                          return;
-                      }
                       let x = ev.touches[0].clientX - this.prevX;
                       let y = ev.touches[0].clientY - this.prevY;
                       this.prevX = ev.touches[0].clientX;
                       this.prevY = ev.touches[0].clientY;
+                      if(ev.target.classList.contains('dragging')==false){
+                          return;
+                      }
                       var style = getComputedStyle(ev.target);
                       ev.target.style.top  = (parseInt(style.top, 10) +  y ) + "px";
                       ev.target.style.left = (parseInt(style.left, 10) + x ) + "px";
