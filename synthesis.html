@@ -90,24 +90,24 @@
 
                   // taouch panel用
                   elm.addEventListener('touchstart', ev => {
-//                      ev.target.classList.add("holding");
+                      ev.target.classList.add("holding");
                       this.prevX = ev.touches[0].clientX;
                       this.prevY = ev.touches[0].clientY;
                   });
                   elm.addEventListener("touchmove", ev => {
-                      let x = ev.touches[0].clientX - this.prevX;
-                      let y = ev.touches[0].clientY - this.prevY;
-                      prevX = ev.touches[0].clientX;
-                      prevY = ev.touches[0].clientY;
-                      if(ev.target.classList.contains('dragging')==false){
+                      if(ev.target.classList.contains('holding')==false){
                           return;
                       }
+                      let x = ev.touches[0].clientX - this.prevX;
+                      let y = ev.touches[0].clientY - this.prevY;
+                      this.prevX = ev.touches[0].clientX;
+                      this.prevY = ev.touches[0].clientY;
                       var style = getComputedStyle(ev.target);
                       ev.target.style.top  = (parseInt(style.top, 10) +  y ) + "px";
                       ev.target.style.left = (parseInt(style.left, 10) + x ) + "px";
                   });
                   elm.addEventListener('touchend', ev => {
-  //                    ev.target.classList.remove("holding");
+                      ev.target.classList.remove("holding");
                   });
               });
           }
