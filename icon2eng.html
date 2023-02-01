@@ -4,28 +4,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>ICON 2 English</title>
-    <style type="text/css">
-        .draggable {
-            position: relative;
-            user-select: none;
-            cursor: pointer;
-            z-index: 2;
-        }
-
-        .holding {
-            opacity: .5;
-        }
-
-        .statemenmt_tray {
-            background-color: #eeffee;
-            height: 100px;
-        }
-
-        .words_tray {
-            background-color: #ffeeee;
-            height: 100px;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="css/graphical_tray_translater.css" />
 </head>
 
 <body>
@@ -36,191 +15,33 @@
     <select id="voice-select2" />
     <input id="voice-test2" type="button" value="視聴" />
     <div id="working_root2" class="tray"></div>
-    <script>
-        class SpeechSynthesiser {
-            constructor(list_id) {
-                this.list_id = list_id;
-                speechSynthesis.addEventListener('voiceschanged', ev => {
-                    this.updateVoiceSelect();
-                });
-                this.voice = {};
-            }
-            setVoice(name) {
-                let voice = speechSynthesis.getVoices().filter(voice => voice.name === name)[0];
-                this.voice = voice;
-            }
-            speak(text) {
-                const uttr = new SpeechSynthesisUtterance(text);
-                uttr.voice = this.voice;
-                speechSynthesis.speak(uttr);
-            }
-            updateVoiceSelect() {
-                const voices = speechSynthesis.getVoices();
-                let elm = document.querySelector('#' + this.list_id);
-                elm.innerHTML = '';
-
-                let matched_voices = [];
-                voices.forEach(v => {
-                    if (!v.lang.match('en-US')) {
-                        return;
-                    }
-                    const option = document.createElement('option');
-                    option.value = v.name;
-                    option.text = `${v.name} (${v.lang});`;
-                    option.setAttribute('selected', v.default);
-                    elm.appendChild(option);
-                    matched_voices.push(v);
-                });
-                let arg_voice = matched_voices.filter(voice => voice.name == elm.value)[0];
-                this.setVoice(arg_voice.name);
-            }
-        }
-        class GraphcalTaryTranslater {
-            constructor(working_root_id, speak_func) {
-                this.working_root_id = working_root_id;
-                this.statemenmt_tray_class = 'statemenmt_tray';
-                this.words_tray_class = 'words_tray';
-                this.word_class = 'word';
-                this.speak_func = speak_func;
-                this.prevX = 0;
-                this.prevY = 0;
-            }
-            speakInEng(japanese) {
-                document.querySelector('#' + this.working_root_id + ' .jan').textContent = japanese;
-                document.querySelector('#' + this.working_root_id + ' .eng').textContent = '';
-
-                fetch('https://script.google.com/macros/s/AKfycbzaYhG3i8Q8G-jp0t5DK04qAe7v11od6WVdcNtkvrR6a58b4CbBSgdWmW4QWZ4kFM3l/exec?translate="' + japanese + '"&source=ja&target=en')
-                    .then(response => {
-                        return response.json();
-                    })
-                    .then(json => {
-                        document.querySelector('#' + this.working_root_id + ' .eng').textContent = json;
-                        this.speak_func(json);
-                        return;
-                    });
-            }
-            makeWorkPlace() {
-                let root = document.querySelector('#' + this.working_root_id);
-                root.insertAdjacentHTML('beforeend', '<div class="' + this.statemenmt_tray_class + ' tray"></div>');
-                root.insertAdjacentHTML('beforeend', '<table><tr><td><div class="jan">{日本語}</div></td><td>⇒</td><td><div class="eng">{英語}</div></td></tr></table>');
-                root.insertAdjacentHTML('beforeend', '<div class="' + this.words_tray_class + ' tray"></div>');
-
-                [
-                    {'text':'私は',   'img':'img/I.jpg'},
-                    {'text':'千尋は', 'img':'img/chihiro.jpg'},
-                    {'text':'バナナ', 'img':'img/banana.jpg'},
-                    {'text':'いちご', 'img':'img/strawberry.jpg'},
-                    {'text':'食べる', 'img':'img/eat.jpg'},
-                    {'text':'買う',   'img':'img/buy.jpg'},
-                    {'text':'今日',   'img':'img/today.jpg'},
-                    {'text':'明日',   'img':'img/tommorow.jpg'},
-                    {'text':'昨日',   'img':'img/yesterday.jpg'}
-                ].forEach( item => {
-                    const add_code = '<img class="' + this.word_class + ' draggable" src="' + item.img + '" data-text="' + item.text + '" />';
-                    document.querySelector('#' + this.working_root_id + ' .' + this.words_tray_class).insertAdjacentHTML('beforeend', add_code);
-                });
-                document.querySelectorAll('#' + this.working_root_id  +" ." + this.word_class).forEach(elm => {
-                    elm.addEventListener('mousedown', ev => {
-                        ev.target.classList.add("holding");
-                    });
-                    elm.addEventListener('mousemove', ev => {
-                        if (ev.target.classList.contains('holding') == false) {
-                            return;
-                        }
-                        ev.target.classList.add("dragging");
-                        var style = getComputedStyle(ev.target);
-                        ev.target.style.top = (parseInt(style.top, 10) + ev.movementY) + "px";
-                        ev.target.style.left = (parseInt(style.left, 10) + ev.movementX) + "px";
-                    });
-                    elm.addEventListener('mouseup', ev => {
-                        let isDragging = ev.target.classList.contains('dragging');
-                        ev.target.classList.remove("dragging");
-                        ev.target.classList.remove("holding");
-                        if (isDragging) {
-                            return;
-                        }
-                        this.speakInEng(ev.target.dataset.text);
-                        return false;
-                    });
-                    elm.addEventListener('mouseout', ev => {
-                        ev.target.classList.remove("holding");
-                        ev.target.classList.remove("dragging");
-                    });
-
-                    // taouch panel用
-                    elm.addEventListener('touchstart', ev => {
-                        ev.target.classList.add("holding");
-                        this.prevX = ev.touches[0].clientX;
-                        this.prevY = ev.touches[0].clientY;
-                    });
-                    elm.addEventListener("touchmove", ev => {
-                        if (ev.target.classList.contains('holding') == false) {
-                            return;
-                        }
-                        let x = ev.touches[0].clientX - this.prevX;
-                        let y = ev.touches[0].clientY - this.prevY;
-                        this.prevX = ev.touches[0].clientX;
-                        this.prevY = ev.touches[0].clientY;
-                        var style = getComputedStyle(ev.target);
-                        ev.target.style.top = (parseInt(style.top, 10) + y) + "px";
-                        ev.target.style.left = (parseInt(style.left, 10) + x) + "px";
-                    });
-                    elm.addEventListener('touchend', ev => {
-                        ev.target.classList.remove("holding");
-                    });
-                });
-                document.querySelector('#' + this.working_root_id + ' .' + this.statemenmt_tray_class).addEventListener('click', e => {
-                    let cr = e.target.getBoundingClientRect();
-
-                    let tlx = window.pageXOffset + cr.left;
-                    let tly = window.pageYOffset + cr.top;
-                    let brx = tlx + cr.width;
-                    let bry = tly + cr.height;
-
-                    let words_on_tray = [];
-                    document.querySelectorAll('#' + this.working_root_id + ' .' + this.words_tray_class + ' .' + this.word_class).forEach(word => {
-                        let cr = word.getBoundingClientRect();
-                        let left = window.pageXOffset + cr.left;
-                        let top = window.pageYOffset + cr.top;
-                        if (bry < top) {
-                            return;
-                        }
-                        words_on_tray.push(word);
-                    });
-                    let statement = '';
-                    words_on_tray.forEach(word => {
-                        statement = statement + word.dataset.text + ' ';
-                    });
-                    statement = statement + "。";
-
-                    this.speakInEng(statement);
-                });
-            }
-        }
-        let ss1 = new SpeechSynthesiser('voice-select1');
-        let gtt1 = new GraphcalTaryTranslater('working_root1', text => ss1.speak(text));
-        gtt1.makeWorkPlace();
-
-        document.querySelector('#voice-select1').onchange = (ev) => {
-            ss1.setVoice(ev.target.value);
-        }
-        document.querySelector('#voice-test1').addEventListener('click', () => {
-            ss1.setVoice(document.querySelector('#voice-select1').value);
-            ss1.speak("Hello, world!");
-        });
-
-        let ss2 = new SpeechSynthesiser('voice-select2');
-        let gtt2 = new GraphcalTaryTranslater('working_root2', text => ss2.speak(text));
-        gtt2.makeWorkPlace();
-
-        document.querySelector('#voice-select2').onchange = (ev) => {
-            ss2.setVoice(ev.target.value);
-        }
-        document.querySelector('#voice-test2').addEventListener('click', () => {
-            ss2.setVoice(document.querySelector('#voice-select2').value);
-            ss2.speak("Hello, world!");
-        });
-    </script>
 </body>
+<script src="js/speech_synthesiser.js" charset="utf-8"></script>
+<script src="js/graphical_tray_translater.js" charset="utf-8"></script>
+<script>
+    let ss1 = new SpeechSynthesiser('voice-select1');
+    let gtt1 = new GraphcalTaryTranslater('working_root1', (text) => {
+        ss1.speak(text);
+    });
+    document.querySelector('#voice-select1').addEventListener('change', (ev) => {
+        ss1.setVoice(ev.target.value);
+    });
+    document.querySelector('#voice-test1').addEventListener('click', () => {
+        ss1.setVoice(document.querySelector('#voice-select1').value);
+        ss1.speak("Hello, world!");
+    });
+
+    let ss2 = new SpeechSynthesiser('voice-select2');
+    let gtt2 = new GraphcalTaryTranslater('working_root2', (text) => {
+        ss2.speak(text);
+    });
+    document.querySelector('#voice-select2').addEventListener('change', (ev) => {
+        ss2.setVoice(ev.target.value);
+    });
+    document.querySelector('#voice-test2').addEventListener('click', () => {
+        ss2.setVoice(document.querySelector('#voice-select2').value);
+        ss2.speak("Hello, world!");
+    });
+</script>
 
 </html>
