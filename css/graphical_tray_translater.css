@@ -1,0 +1,20 @@
+.draggable {
+    position: relative;
+    user-select: none;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.holding {
+    opacity: .5;
+}
+
+.statemenmt_tray {
+    background-color: #eeffee;
+    height: 120px;
+}
+
+.words_tray {
+    background-color: #ffeeee;
+    height: 120px;
+}
