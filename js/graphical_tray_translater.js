@@ -36,6 +36,7 @@ class GraphcalTaryTranslater {
             { 'text': '買う', 'img': 'img/buy.png' },
             { 'text': 'バナナ', 'img': 'img/banana.png' },
             { 'text': 'いちご', 'img': 'img/strawberry.png' },
+            { 'text': '自分', 'img': 'img/self.png' },
             { 'text': '牛乳', 'img': 'img/milk.png' },
             { 'text': '昨日', 'img': 'img/yesterday.png' },
             { 'text': '今日', 'img': 'img/today.png' },

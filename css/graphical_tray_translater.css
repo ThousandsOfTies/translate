@@ -11,6 +11,7 @@
 
 .statemenmt_tray {
     background-color: #eeffee;
+    background-image: url("../img/bg.png");
     height: 120px;
 }
 
