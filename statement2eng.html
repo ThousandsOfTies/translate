@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Statement 2 English</title>
+    <link rel="stylesheet" type="text/css" href="css/statement_translater.css" />
+</head>
+
+<body>
+    <nav>
+        <ul>
+            <li id="jan" class="lang_selector current">日本語</li>
+            <li id="eng" class="lang_selector">英語</li>
+        </ul>
+    </nav>
+    <select id="voice-select" />
+    <input id="voice-test" type="button" value="視聴" />
+    <div id="working_root">
+    </div>
+</body>
+<script src="js/speech_synthesiser.js" charset="utf-8"></script>
+<script src="js/statement_translater.js" charset="" utf-8"></script>
+<script>
+    let ss = new SpeechSynthesiser('voice-select');
+    let gtt = new StatementSynthesiser('working_root', (text) => {
+        ss.speak(text);
+    });
+    document.querySelector('#voice-select1').addEventListener('change', (ev) => {
+        ss1.setVoice(ev.target.value);
+    });
+    document.querySelector('#voice-test').addEventListener('click', () => {
+        ss1.setVoice(document.querySelector('#voice-select').value);
+        ss1.speak("Hello, world!");
+    });
+</script>
+
+</html>
