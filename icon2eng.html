@@ -4,7 +4,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>ICON 2 English</title>
-    <link rel="stylesheet" type="text/css" href="css/graphical_tray_translater.css" />
+    <link rel="stylesheet" type="text/css" href="css/icons_translater.css" />
 </head>
 
 <body>
@@ -17,10 +17,10 @@
     <div id="working_root2" class="tray"></div>
 </body>
 <script src="js/speech_synthesiser.js" charset="utf-8"></script>
-<script src="js/graphical_tray_translater.js" charset="utf-8"></script>
+<script src="js/icons_translater.js" charset="utf-8"></script>
 <script>
     let ss1 = new SpeechSynthesiser('voice-select1');
-    let gtt1 = new GraphcalTaryTranslater('working_root1', (text) => {
+    let it1 = new IconsTranslater('working_root1', (text) => {
         ss1.speak(text);
     });
     document.querySelector('#voice-select1').addEventListener('change', (ev) => {
@@ -32,7 +32,7 @@
     });
 
     let ss2 = new SpeechSynthesiser('voice-select2');
-    let gtt2 = new GraphcalTaryTranslater('working_root2', (text) => {
+    let it2 = new IconsTranslater('working_root2', (text) => {
         ss2.speak(text);
     });
     document.querySelector('#voice-select2').addEventListener('change', (ev) => {

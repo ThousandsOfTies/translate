@@ -1,4 +1,4 @@
-class GraphcalTaryTranslater {
+class IconsTranslater {
     constructor(working_root_id, speak_func) {
         this.working_root_id = working_root_id;
         this.statemenmt_tray_class = 'statemenmt_tray';
