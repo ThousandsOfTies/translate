@@ -20,19 +20,33 @@
     </div>
 </body>
 <script src="js/speech_synthesiser.js" charset="utf-8"></script>
-<script src="js/statement_translater.js" charset="" utf-8"></script>
+<script src="js/statement_translater.js" charset="utf-8" utf-8"></script>
 <script>
     let ss = new SpeechSynthesiser('voice-select');
-    let gtt = new StatementSynthesiser('working_root', (text) => {
+    let st = new StatementTranslater('working_root', (text) => {
         ss.speak(text);
     });
-    document.querySelector('#voice-select1').addEventListener('change', (ev) => {
-        ss1.setVoice(ev.target.value);
+    document.querySelector('#voice-select').addEventListener('change', (ev) => {
+        ss.setVoice(ev.target.value);
     });
     document.querySelector('#voice-test').addEventListener('click', () => {
-        ss1.setVoice(document.querySelector('#voice-select').value);
-        ss1.speak("Hello, world!");
+        ss.setVoice(document.querySelector('#voice-select').value);
+        ss.speak("Hello, world!");
     });
+
+    document.querySelectorAll('.lang_selector').forEach(elm => {
+    elm.addEventListener('click', ev => {
+        document.querySelectorAll('.lang_selector').forEach(elm => {
+            elm.classList.remove('current');
+        });
+        ev.target.classList.add('current');
+        if (ev.target.id == 'eng') {
+            st.translateIntoEng();
+        } else {
+            st.translateBack();
+        }
+    });
+});
 </script>
 
 </html>
