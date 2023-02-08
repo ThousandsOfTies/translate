@@ -1,26 +1,7 @@
-class IconsTranslater {
+class GrammerChecker {
     constructor(working_root_id, icon_list, speak_func) {
         this.working_root_id = working_root_id;
         this.statemenmt_tray_class = 'statemenmt_tray';
-        this.words_tray_class = 'words_tray';
-        this.word_class = 'word';
-        this.speak_func = speak_func;
-        this.prevX = 0;
-        this.prevY = 0;
-        this.makeWorkPlace(icon_list);
-    }
-    speakInEng(words) {
-        document.querySelector('#' + this.working_root_id + ' .words').textContent = words;
-        document.querySelector('#' + this.working_root_id + ' .eng').textContent = '英語化中';
-        fetch('https://script.google.com/macros/s/AKfycbzaYhG3i8Q8G-jp0t5DK04qAe7v11od6WVdcNtkvrR6a58b4CbBSgdWmW4QWZ4kFM3l/exec?translate="' + words + '"&source=ja&target=en')
-        .then(res => {
-            return res.json();
-        })
-        .then(eng => {
-            document.querySelector('#' + this.working_root_id + ' .eng').textContent = eng;
-            this.speak_func(eng);
-            return;
-        });
     }
     makeWorkPlace(icon_list) {
         let root = document.querySelector('#' + this.working_root_id);
@@ -29,7 +10,7 @@ class IconsTranslater {
         root.insertAdjacentHTML('beforeend', '<div class="' + this.words_tray_class + ' tray"></div>');
 
         icon_list.forEach(item => {
-            const add_code = "<img class='" + this.word_class + " draggable' src='" + item.img + "' data-text='" + item.text + "' data-posi='" + item.posi + "' alt='" + item.text + "' draggable='false'/>";
+            const add_code = '<img class="' + this.word_class + ' draggable" src="' + item.img + '" data-text="' + item.text + '" alt="' + item.text + '" draggable="false"/>';
             document.querySelector('#' + this.working_root_id + ' .' + this.words_tray_class).insertAdjacentHTML('beforeend', add_code);
         });
         document.querySelectorAll('#' + this.working_root_id + " ." + this.word_class).forEach(elm => {
@@ -107,10 +88,6 @@ class IconsTranslater {
                 return 0;
             });
             words_on_tray.forEach(word => {
-                console.log('text = ' + word.dataset.txt);
-                word.dataset.posi.forEach(pos => {
-                    console.log('pos = ' + pos);
-                });
                 statement = statement + word.dataset.text + ' ';
             });
             statement = statement + "。";
