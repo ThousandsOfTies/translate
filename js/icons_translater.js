@@ -106,6 +106,8 @@ class IconsTranslater {
                 if( y.getBoundingClientRect().left < x.getBoundingClientRect().left) return 1;
                 return 0;
             });
+            let wr = new WordsReorderer();
+            words_on_tray = wr.exec(words);
             words_on_tray.forEach(word => {
                 console.log('text = ' + word.dataset.txt);
                 word.dataset.posi.forEach(pos => {
