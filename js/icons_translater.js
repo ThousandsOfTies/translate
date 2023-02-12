@@ -107,13 +107,9 @@ class IconsTranslater {
                 return 0;
             });
             let wr = new WordsReorderer();
-            words_on_tray = wr.exec(words);
-            words_on_tray.forEach(word => {
-                console.log('text = ' + word.dataset.txt);
-                word.dataset.posi.forEach(pos => {
-                    console.log('pos = ' + pos);
-                });
-                statement = statement + word.dataset.text + ' ';
+            let reordered_words = wr.exec(words_on_tray);
+            reordered_words.forEach(word => {
+                statement = statement + word + ' ';
             });
             statement = statement + "。";
 
